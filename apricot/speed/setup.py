@@ -7,78 +7,91 @@ import numpy
 import sys
 import os
 
-FORCE = '--force' in sys.argv
-if FORCE:
-    sys.argv.remove('--force')
+if __name__ == '__main__':
+    FORCE = '--force' in sys.argv
+    if FORCE:
+        sys.argv.remove('--force')
 
-if '-h' in sys.argv or '--help' in sys.argv or len(sys.argv) > 1:
-    print("Usage: "+sys.argv[0]+" [--force]")
-    exit()
+    if '-h' in sys.argv or '--help' in sys.argv or len(sys.argv) > 1:
+        print("Usage: "+sys.argv[0]+" [--force]")
+        exit()
 
-ROOT = os.path.abspath(__file__+"/../../../")
-os.chdir(ROOT)
-sys.path.append(ROOT)
-import apricot.speed
-apricot.speed._COMPILING = True
+    ROOT = os.path.abspath(__file__+"/../../../")
+    os.chdir(ROOT)
+    sys.path.append(ROOT)
+    import apricot.speed
+    apricot.speed._COMPILING = True
 
-print("Generating stubs...")
-files = StubgenPyx().convert_glob("**/*.pyx")
-MODULES = []
-for f in files:
-    pyx_path = f.pyx_file.resolve()
-    rel = pyx_path.relative_to(ROOT)
-    parts = rel.with_suffix("").parts
-    module_name = ".".join(parts)
-    MODULES.append((module_name, str(rel)))
+    print("Generating stubs...")
+    files = StubgenPyx().convert_glob("**/*.pyx")
+    MODULES = []
+    for f in files:
+        pyx_path = f.pyx_file.resolve()
+        rel = pyx_path.relative_to(ROOT)
+        parts = rel.with_suffix("").parts
+        module_name = ".".join(parts)
+        MODULES.append((module_name, str(rel)))
 
-if len(MODULES) > 0:
-    print(f"Compiling modules: {', '.join(m[0] for m in MODULES)}...")
-    compile_flags = [
-        "-O3",
-        "-ffast-math",
-        "-funroll-loops",
-        f"-ffile-prefix-map={ROOT}=."
-    ]
-    if sys.platform == 'win32':
-        compile_flags.append('/openmp')
-        link_flags = []
-    else:
-        compile_flags.append('-fopenmp')
-        link_flags = ['-fopenmp']
-    extensions = [
-        Extension(
-            name=modname,
-            sources=[src],
-            include_dirs=[numpy.get_include()],
-            define_macros=[
-                ("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION"),
-                ("Py_LIMITED_API", "0x030B0000")
-            ],
-            py_limited_api=True,
-            extra_compile_args=compile_flags,
-            extra_link_args=link_flags,
+    if len(MODULES) > 0:
+        print(f"Compiling modules: {', '.join(m[0] for m in MODULES)}...")
+        if sys.platform == 'win32':
+            compile_flags = [
+                "/fp:fast",
+                "/openmp",
+                f"/pathmap:{ROOT}=.",
+            ]
+            link_flags = []
+        elif sys.platform == 'darwin':
+            compile_flags = [
+                "-O3",
+                "-ffast-math",
+                "-funroll-loops",
+                f"-ffile-prefix-map={ROOT}=."
+            ]
+            link_flags = []
+        else:
+            compile_flags = [
+                "-O3",
+                "-ffast-math",
+                "-funroll-loops",
+                "-fopenmp",
+                f"-ffile-prefix-map={ROOT}=.",
+            ]
+            link_flags = ['-fopenmp']
+        extensions = [
+            Extension(
+                name=modname,
+                sources=[src],
+                include_dirs=[numpy.get_include()],
+                define_macros=[
+                    ("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION"),
+                    ("Py_LIMITED_API", "0x030B0000")
+                ],
+                py_limited_api=True,
+                extra_compile_args=compile_flags,
+                extra_link_args=link_flags,
+            )
+            for modname, src in MODULES
+        ]
+        ext_modules = cythonize(
+            extensions,
+            nthreads=6,
+            language_level="3",
+            compiler_directives={'binding': False},
+            force=FORCE
         )
-        for modname, src in MODULES
-    ]
-    ext_modules = cythonize(
-        extensions,
-        nthreads=6,
-        language_level="3",
-        compiler_directives={'binding': False},
-        force=FORCE
-    )
 
-    dist = Distribution({"name": "inline-build", "ext_modules": ext_modules})
-    cmd = build_ext(dist)
-    cmd.build_lib = os.getcwd()
-    cmd.build_temp = os.path.join(os.getcwd(), "build")
-    cmd.inplace = True
-    cmd.parallel = 6
-    cmd.force = FORCE
+        dist = Distribution({"name": "inline-build", "ext_modules": ext_modules})
+        cmd = build_ext(dist)
+        cmd.build_lib = os.getcwd()
+        cmd.build_temp = os.path.join(os.getcwd(), "build")
+        cmd.inplace = True
+        cmd.parallel = 6
+        cmd.force = FORCE
 
-    cmd.ensure_finalized()
-    cmd.run()
-else:
-    print("No modules found!")
+        cmd.ensure_finalized()
+        cmd.run()
+    else:
+        print("No modules found!")
 
-print("Finished!")
+    print("Finished!")

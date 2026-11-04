@@ -4,18 +4,26 @@ on:
   workflow_dispatch:
 
 jobs:
-  compile-linux:
+  compile:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            name: linux
+          - os: windows-latest
+            name: windows
     permissions:
       contents: write
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
+
       - name: Setup Python
-        uses: actions/setup-python@v2.2.2
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-          architecture: x64
 
       - name: Install dependencies
         run: python -m pip install stubgen-pyx "numpy>=1.7"
@@ -28,30 +36,4 @@ jobs:
           pull: '--rebase --autostash'
           add: '-A'
           default_author: github_actions
-          message: '🛠️ Build for linux :)'
-
-  compile-windows:
-    permissions:
-      contents: write
-    runs-on: windows-latest
-
-    steps:
-      - uses: actions/checkout@v2
-      - name: Setup Python
-        uses: actions/setup-python@v2.2.2
-        with:
-          python-version: "3.11"
-          architecture: x64
-
-      - name: Install dependencies
-        run: python -m pip install stubgen-pyx "numpy>=1.7"
-
-      - name: Compile all
-        run: python apricot/speed/setup.py
-
-      - uses: EndBug/add-and-commit@v9
-        with:
-          pull: '--rebase --autostash'
-          add: '-A'
-          default_author: github_actions
-          message: '🛠️ Build for windows!'
+          message: '🛠️ Build for ${{ matrix.name }} :)'
