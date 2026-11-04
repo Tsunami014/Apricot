@@ -44,7 +44,6 @@ requires-python = ">= 3.11"
 [project.urls]
 Homepage = "https://github.com/Tsunami014/Apricot"
 Download = "https://github.com/Tsunami014/Apricot/archive/refs/tags/v3.2.0.tar.gz"
-Documentation = "https://tsunami014.gitbook.io/Apricot/"
 Repository = "https://github.com/Tsunami014/Apricot"
 Issues = "https://github.com/Tsunami014/Apricot/issues"
 

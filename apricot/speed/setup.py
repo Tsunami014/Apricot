@@ -7,8 +7,12 @@ import numpy
 import sys
 import os
 
+FORCE = '--force' in sys.argv
+if FORCE:
+    sys.argv.remove('--force')
+
 if '-h' in sys.argv or '--help' in sys.argv or len(sys.argv) > 1:
-    print("Usage: "+sys.argv[0]+" [-h/--help]")
+    print("Usage: "+sys.argv[0]+" [--force]")
     exit()
 
 ROOT = os.path.abspath(__file__+"/../../../")
@@ -18,24 +22,29 @@ import apricot.speed
 apricot.speed._COMPILING = True
 
 print("Generating stubs...")
-files = StubgenPyx().convert_glob(ROOT+"/**/*.pyx")
+files = StubgenPyx().convert_glob("**/*.pyx")
 MODULES = []
 for f in files:
     pyx_path = f.pyx_file.resolve()
     rel = pyx_path.relative_to(ROOT)
     parts = rel.with_suffix("").parts
     module_name = ".".join(parts)
-    MODULES.append((module_name, str(pyx_path)))
+    MODULES.append((module_name, str(rel)))
 
 if len(MODULES) > 0:
     print(f"Compiling modules: {', '.join(m[0] for m in MODULES)}...")
+    compile_flags = [
+        "-O3",
+        "-ffast-math",
+        "-funroll-loops",
+        f"-ffile-prefix-map={ROOT}=."
+    ]
     if sys.platform == 'win32':
-        compile_flags = ['/openmp']
+        compile_flags.append('/openmp')
         link_flags = []
     else:
-        compile_flags = ['-fopenmp']
+        compile_flags.append('-fopenmp')
         link_flags = ['-fopenmp']
-    compile_flags.extend(["-O3", "-ffast-math", "-funroll-loops"])
     extensions = [
         Extension(
             name=modname,
@@ -55,7 +64,8 @@ if len(MODULES) > 0:
         extensions,
         nthreads=6,
         language_level="3",
-        compiler_directives={'binding': False}
+        compiler_directives={'binding': False},
+        force=FORCE
     )
 
     dist = Distribution({"name": "inline-build", "ext_modules": ext_modules})
@@ -64,6 +74,7 @@ if len(MODULES) > 0:
     cmd.build_temp = os.path.join(os.getcwd(), "build")
     cmd.inplace = True
     cmd.parallel = 6
+    cmd.force = FORCE
 
     cmd.ensure_finalized()
     cmd.run()

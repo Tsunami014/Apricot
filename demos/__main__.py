@@ -2,12 +2,16 @@ import tempfile
 import sys
 import os
 
+def fix_cwd():
+    pth = os.path.abspath(os.path.join(__file__, "..", ".."))
+    os.chdir(pth)
+    sys.path.append(pth)
+
 def get_demos():
     import importlib.util
     cmds = {}
-    pth = os.path.abspath(os.path.join(__file__, "..", "demos"))
-    for it in os.listdir(pth):
-        full = os.path.join(pth, it)
+    for it in os.listdir('demos'):
+        full = os.path.join('demos', it)
         if '.' not in it and it[0] != '_' and os.path.isdir(full):
             alls = []
             for it2 in os.listdir(full):
@@ -53,12 +57,12 @@ def run(args, idx):
     with open(last_demo_file(), 'w+') as f:
         f.write(str(idx))
     print('loading demo %s...'%nam)
-    sys.path.append(os.path.abspath(os.path.dirname(__file__)))
     os.chdir(os.path.dirname(pth))
     mod.main()
 
 
 if __name__ == '__main__':
+    fix_cwd()
     cmds = get_demos()
 
     def runFn(idx):

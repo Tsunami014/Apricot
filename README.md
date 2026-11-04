@@ -40,13 +40,13 @@ To run the demos;
 
 1. Clone the repo (with `--depth 5` so you're not pulling all of history)
 2. Install requirements
-3. Run `demos.py`
+3. Run `python3 demos`
 
 ```bash
 git clone --depth 5 https://github.com/Tsunami014/Apricot.git
 cd apricot
 pip install .
-python3 demos.py
+python3 demos
 ```
 
 ## Installation

@@ -8,7 +8,7 @@
             "name": "Run Demos",
             "type": "debugpy",
             "request": "launch",
-            "program": "demos.py",
+            "program": "demos",
             "console": "integratedTerminal",
             "justMyCode": false
         },
@@ -16,7 +16,7 @@
             "name": "Run Last Demo",
             "type": "debugpy",
             "request": "launch",
-            "program": "demos.py",
+            "program": "demos",
             "args": [ "last" ],
             "console": "integratedTerminal",
             "justMyCode": false
