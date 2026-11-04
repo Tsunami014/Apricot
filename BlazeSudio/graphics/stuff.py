@@ -1,9 +1,10 @@
 from typing import Tuple, overload
 from collections import deque
-import time
+import sdl2
 
-__all__ = ['Clock', 'AvgClock', 'Col']
+__all__ = ['Clock', 'Col']
 
+CLOCK_FREQ = float(sdl2.SDL_GetPerformanceFrequency())
 class Clock:
     __slots__ = ['secs', 'dt', '_lastTime', '_frameTimes']
     def __init__(self, secs: float = 5):
@@ -35,16 +36,14 @@ class Clock:
             raise ValueError(
                 "Max FPS must be > 0!!"
             )
-        t = time.perf_counter()
+        t = sdl2.SDL_GetPerformanceCounter()/CLOCK_FREQ
         if self._lastTime is not None:
             if maxfps is not None:
                 deadline = self._lastTime + 1.0 / maxfps
-                remaining = deadline - time.perf_counter()
-                if remaining > 0.005:
-                    time.sleep(remaining - 0.002)
-                while time.perf_counter() < deadline: # For accuracy
-                    pass
-                t = time.perf_counter()
+                remaining = round((deadline - t)*1000) # Into ms
+                if remaining > 15:
+                    sdl2.SDL_Delay(remaining)
+                t = sdl2.SDL_GetPerformanceCounter()/CLOCK_FREQ
             self.dt = t - self._lastTime
 
         if self.secs > 0:

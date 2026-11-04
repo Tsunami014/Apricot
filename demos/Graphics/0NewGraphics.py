@@ -63,7 +63,7 @@ def main():
                     + Op.Draw.Rect(500, 350, 50, 30, 0, Col.Secondary)
                     + Op.Draw.Rect((500, 400), (30, 50), 0, Col.Accent, roundness=10)
                 )
-                # Testing stupid cases. These *should* all appear one after the other in a column
+                # Testing stupid cases. These should appear one after the other in a column
                 ops += (
                     + Op.Draw.Rect(500, 500, 0, 0, 5, Col(80, 255, 100, 255))
                     + Op.Draw.Rect(500, 510, 50, 50, 1, Col.Blue, roundness=100)
@@ -103,7 +103,7 @@ def main():
                 perframe = _4perframe
             case 5: # Font
                 def _5perframe(f):
-                    Core(ops + fnt("FPS: "+str(c.get_fps()), (255, 125, 0, 255))@Op.Trans.Translate(80, 80))
+                    Core(ops + fnt(f"FPS: {c.get_fps()}\nDT: {c.dt}", (255, 125, 0, 255))@Op.Trans.Translate(80, 80))
                 perframe = _5perframe
             case 6: # Effects
                 def _6perframe(f):
@@ -171,6 +171,7 @@ def main():
     avgFPS = 0
     r = True
     nxtchng = None
+    dt = 0
     while r:
         for ev in pygame.event.get():
             if ev.type == pygame.QUIT or (ev.type == pygame.KEYDOWN and ev.key == pygame.K_ESCAPE):
@@ -259,7 +260,8 @@ def main():
                 new_rect = rot.get_rect(center=cache.get_rect().center)
                 WIN.blit(rot, new_rect)
             case 5: # Font
-                WIN.blit(fnt.render("FPS: "+str(avgFPS), 0, (255, 125, 0)), (80, 80))
+                WIN.blit(fnt.render(f"FPS: {avgFPS}", 0, (255, 125, 0)), (80, 80))
+                WIN.blit(fnt.render(f"DT: {dt/1000}", 0, (255, 125, 0)), (80, 90+fnt.get_height()))
             case 6: # Effects
                 if cache is None:
                     cache = pygame.Surface(WIN.get_size(), pygame.SRCALPHA)
@@ -270,7 +272,7 @@ def main():
 
         if not ks[pygame.K_SPACE]:
             pygame.display.flip()
-        c.tick()
+        dt = c.tick()
         if f % 20 == 0:
             times.append(c.get_fps())
             if rot and time.time() - start > 3 and len(times) >= 30:
