@@ -26,7 +26,8 @@ class _CoreCls:
         self.smooth = False
         self._vsync = True
 
-        self._rebuild(True)
+        self._mainWin = None
+        self.rebuild()
 
     def Quit(self):
         """
@@ -74,18 +75,21 @@ class _CoreCls:
                 )
         if sze[0] == 0 and sze[1] == 0:
             sdl2.SDL_SetWindowFullscreen(self._mainWin, sdl2.SDL_WINDOW_FULLSCREEN_DESKTOP)
-            w, h = ctypes.c_int(), ctypes.c_int()
-            sdl2.SDL_GetWindowSize(self._mainWin, ctypes.byref(w), ctypes.byref(h))
-            sze = (w.value, h.value)
+            self._find_size()
         else:
             sdl2.SDL_SetWindowSize(self._mainWin, *sze)
-        self._sze = sze
+            self._sze = sze
 
         if self._arr is not None:
             sdl2.SDL_UnlockTexture(self._texture)
             self._arr = None
         sdl2.SDL_DestroyTexture(self._texture)
         self._texture = sdl2.SDL_CreateTexture(self._renderer, _PIXFMT, sdl2.SDL_TEXTUREACCESS_STREAMING, *self._sze)
+
+    def _find_size(self):
+        w, h = ctypes.c_int(), ctypes.c_int()
+        sdl2.SDL_GetWindowSize(self._mainWin, ctypes.byref(w), ctypes.byref(h))
+        self._sze = (w.value, h.value)
 
     def __del__(self):
         if self._arr is not None:
@@ -111,8 +115,7 @@ class _CoreCls:
     def resizable(self, new: bool):
         if self.resizable == new:
             return
-        # Rebuild entire window because otherwise it won't work :(
-        self._rebuild(False, new)
+        sdl2.SDL_SetWindowResizable(self._mainWin, new)
 
     @property
     def vsync(self) -> bool:
@@ -128,19 +131,16 @@ class _CoreCls:
         if self._vsync == new:
             return
         self._vsync = new
-        self._rebuild()
+        self.rebuild()
 
-    def _rebuild(self, init = False, newresizable = None):
-        if not init:
+    def rebuild(self, flags=None):
+        if self._mainWin is not None:
             w, h = ctypes.c_int(), ctypes.c_int()
             x, y = ctypes.c_int(), ctypes.c_int()
             sdl2.SDL_GetWindowSize(self._mainWin, ctypes.byref(w), ctypes.byref(h))
             sdl2.SDL_GetWindowPosition(self._mainWin, ctypes.byref(x), ctypes.byref(y))
-            flags = sdl2.SDL_GetWindowFlags(self._mainWin)
-            if newresizable is True:
-                flags |= sdl2.SDL_WINDOW_RESIZABLE
-            elif newresizable is False:
-                flags &= ~sdl2.SDL_WINDOW_RESIZABLE
+            if flags is None:
+                flags = sdl2.SDL_GetWindowFlags(self._mainWin)
 
             sdl2.SDL_DestroyTexture(self._texture)
             sdl2.SDL_DestroyRenderer(self._renderer)
@@ -151,8 +151,11 @@ class _CoreCls:
                 x.value, y.value, w.value, h.value, flags
             )
         else:
+            if flags is None:
+                flags = sdl2.SDL_WINDOW_SHOWN | sdl2.SDL_WINDOW_RESIZABLE
             self._mainWin = sdl2.SDL_CreateWindow(b"Blaze Sudio game",
-                sdl2.SDL_WINDOWPOS_CENTERED, sdl2.SDL_WINDOWPOS_CENTERED, *self._sze, sdl2.SDL_WINDOW_SHOWN)
+                sdl2.SDL_WINDOWPOS_CENTERED, sdl2.SDL_WINDOWPOS_CENTERED, *self._sze, flags)
+        self._find_size()
 
         self._renderer = sdl2.SDL_CreateRenderer(self._mainWin, -1,
             sdl2.SDL_RENDERER_ACCELERATED | (sdl2.SDL_RENDERER_PRESENTVSYNC if self._vsync else 0)
