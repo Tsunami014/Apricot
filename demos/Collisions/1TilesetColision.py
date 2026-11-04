@@ -1,7 +1,7 @@
 """Tileset collision"""
 def main():
-    from BlazeSudio.graphics import Screen, Loading, options as GO, GUI
-    from BlazeSudio.utils import genCollisions as gen
+    from apricot.graphics import Screen, Loading, options as GO, GUI
+    from apricot.utils import genCollisions as gen
     from functools import partial
     import pygame
 

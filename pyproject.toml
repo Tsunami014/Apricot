@@ -3,9 +3,9 @@ requires = ["setuptools>=42", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "Blaze-Sudio"
+name = "apri"
 version = "3.2.0"
-description = "This is a really cool game/physics/graphics/application engine with everything written from scratch and is much more efficient than existing things!"
+description = "Apricot is a really cool game/physics/graphics/application engine with everything written from scratch and is much more efficient than existing things!"
 readme = "README.md"
 license = "MIT"
 authors = [
@@ -14,7 +14,7 @@ authors = [
 maintainers = [
     {name = "Tsunami014", email = "tsunami014@duck.com"}
 ]
-keywords = ["Python", "games", "engine"]
+keywords = ["Python", "apricot", "games", "engine"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
@@ -42,20 +42,20 @@ dependencies = [
 requires-python = ">= 3.11"
 
 [project.urls]
-Homepage = "https://github.com/Tsunami014/Blaze-Sudio"
-Download = "https://github.com/Tsunami014/Blaze-Sudio/archive/refs/tags/v3.2.0.tar.gz"
-Documentation = "https://tsunami014.gitbook.io/blaze-sudios/"
-Repository = "https://github.com/Tsunami014/Blaze-Sudio"
-Issues = "https://github.com/Tsunami014/Blaze-Sudio/issues"
+Homepage = "https://github.com/Tsunami014/Apricot"
+Download = "https://github.com/Tsunami014/Apricot/archive/refs/tags/v3.2.0.tar.gz"
+Documentation = "https://tsunami014.gitbook.io/Apricot/"
+Repository = "https://github.com/Tsunami014/Apricot"
+Issues = "https://github.com/Tsunami014/Apricot/issues"
 
 [tool.setuptools.packages.find]
 exclude = [
-    "BlazeSudio.speed.setup",
-    "BlazeSudio.speed.time"
+    "apricot.speed.setup",
+    "apricot.speed.time"
 ]
 
 [tool.setuptools.package-data]
-"BlazeSudio" = [
+"apricot" = [
     "ldtk/internal-icons.png",
 
     "**/*.pyi",

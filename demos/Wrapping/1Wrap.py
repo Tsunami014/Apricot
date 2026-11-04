@@ -1,6 +1,6 @@
 """Image wrapping"""
 def main():
-    from BlazeSudio.GUI import UI, Lays, Elms
+    from apricot.GUI import UI, Lays, Elms
     UI.fullscreen()
 
     UI(

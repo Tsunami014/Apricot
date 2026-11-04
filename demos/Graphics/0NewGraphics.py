@@ -20,7 +20,7 @@ def main():
     import sys
     rot = 'rot' in sys.argv
 
-    from BlazeSudio.graphics import Core, Ix, Clock, Col, Op, Font
+    from apricot.graphics import Core, Ix, Clock, Col, Op, Font
     Core.fullscreen()
     Core.vsync = False
 

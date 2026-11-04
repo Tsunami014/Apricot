@@ -4,7 +4,7 @@
 **/build/**
 **/out/**
 # Python building stuff
-Blaze_Sudio.egg-info/**
+apricot.egg-info/**
 # Misc stuff
 *.elm
 temp.dat

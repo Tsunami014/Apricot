@@ -1,7 +1,7 @@
 from base import Finish, Check, AssertEqual, CompareTimes
 
 def testCollisions():
-    from BlazeSudio import collisions
+    from apricot import collisions
 
     # Base rotate functions
     # If these fail there is a big issue

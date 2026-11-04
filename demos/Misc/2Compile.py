@@ -1,7 +1,7 @@
 """Compile [debug]"""
 def main():
-    from BlazeSudio import speedup
-    from BlazeSudio.speedup import compile
+    from apricot import speedup
+    from apricot.speedup import compile
     from importlib import import_module
     import os
     import sys
@@ -55,13 +55,13 @@ def main():
                 inp = inp.lower().strip()
                 if inp == 'p':
                     pth = os.path.abspath(__file__)
-                    basepth = pth[:pth.rindex('/')]+'/BlazeSudio/speedup/cache/'
+                    basepth = pth[:pth.rindex('/')]+'/apricot/speedup/cache/'
                     for i in os.listdir(basepth):
                         if i.startswith(chosen[1]):
                             os.remove(basepth+i)
                     if chosen[1] in speedup.MODULES:
                         speedup.MODULES[chosen[1]]['compiled'] = None
-                    modulepth = 'BlazeSudio.speedup.cache.'+chosen[1]
+                    modulepth = 'apricot.speedup.cache.'+chosen[1]
                     if modulepth in sys.modules:
                         del sys.modules[modulepth]
                     last_res = "Purged!"
@@ -74,7 +74,7 @@ def main():
                         continue
                     totT = 0
                     eachRuns = 100
-                    import_module('BlazeSudio.'+chosen[0])
+                    import_module('apricot.'+chosen[0])
                     if inp == 'r':
                         speedup.setSpeedupType(0)
                     for reg, _, comp, test in speedup.MODULES[chosen[1]]['funcs']:

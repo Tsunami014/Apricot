@@ -1,8 +1,8 @@
 """Sound"""
 def main():
-    from BlazeSudio.graphics import Screen, GUI
-    import BlazeSudio.graphics.options as GO
-    from BlazeSudio.Game.sound import Beep
+    from apricot.graphics import Screen, GUI
+    import apricot.graphics.options as GO
+    from apricot.Game.sound import Beep
     from pygame.locals import KEYDOWN, K_RETURN
     class Main(Screen):
         def _LoadUI(self):

@@ -1,8 +1,8 @@
 """New GUI"""
 def main():
-    from BlazeSudio.graphics import Draw
-    from BlazeSudio.GUI import OpElm
-    from BlazeSudio.GUI import UI, Lays, Elms, Font, Input, Col, Term
+    from apricot.graphics import Draw
+    from apricot.GUI import OpElm
+    from apricot.GUI import UI, Lays, Elms, Font, Input, Col, Term
     Font.SysFonts.set_default(italic=True)
 
     txt = Elms.Text("")

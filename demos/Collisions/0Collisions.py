@@ -1,8 +1,8 @@
 """Collisions demo"""
 
 def main():
-    from BlazeSudio import collisions
-    from BlazeSudio.graphics import Core, Ix, Clock, Col, Op, Font
+    from apricot import collisions
+    from apricot.graphics import Core, Ix, Clock, Col, Op, Font
     import math
     Core.fullscreen()
 

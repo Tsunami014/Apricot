@@ -5,7 +5,7 @@ This is still in development, but look forward to v4.0.0!
 |:-:|:-:|:-:|:-:|:-:|
 
 ## Contents
-Blaze Sudio is a game engine for Python containing;
+Apricot is a game engine for Python containing;
 
 ### A graphics engine
 - Which is faster than Pygame! (Compiled with cython) It's even faster than Pygame when not displaying anything, which is cool.
@@ -43,26 +43,26 @@ To run the demos;
 3. Run `demos.py`
 
 ```bash
-git clone --depth 5 https://github.com/Tsunami014/Blaze-Sudio.git
-cd Blaze-Sudio
+git clone --depth 5 https://github.com/Tsunami014/Apricot.git
+cd apricot
 pip install .
 python3 demos.py
 ```
 
 ## Installation
-Just run `pip install BlazeSudio`
+`pip install apri`
 
 ### Installing from sauce 🍅
 - Git clone and pip install (`--depth 5` clones only the most recent 5 commits, because the history of this project is huge)
 ```bash
-git clone --depth 5 https://github.com/Tsunami014/Blaze-Sudio.git
-cd Blaze-Sudio
+git clone --depth 5 https://github.com/Tsunami014/Apricot.git
+cd apricot
 pip install .
 ```
 
 - OR use the one liner
 ```bash
-pip install "Blaze-Sudio @ git+https://github.com/Tsunami014/Blaze-Sudio.git"
+pip install "git+https://github.com/Tsunami014/Apricot.git"
 ```
 
 
@@ -72,4 +72,4 @@ pip install "Blaze-Sudio @ git+https://github.com/Tsunami014/Blaze-Sudio.git"
 - I turned/will turn (not bothered to change this until I find it again lol) 18 in 2027. So I also made the physics engine etc. before I was/am an adult. Which is my greatest flex hehe
 - Because this project is so old (in terms of my life), I changed coding styles a LOT during development, and because it's so big there's a chance you can find some places where my old code still is unfortunately
 - I tried to use as little external libraries as possible, mostly because I didn't want this to end up like some projects where it has to install a million different things. Also fits with the theme of 'making stuff all myself from scratch'.
-- This project will be renamed at some point before v4.0.0 releases to Apricot
+- This project used to be called Blaze Sudio (mistake intentional) before v4.0.0
