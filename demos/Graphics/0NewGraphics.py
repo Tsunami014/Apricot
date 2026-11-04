@@ -1,4 +1,4 @@
-"""New Graphics [graphics]"""
+"""New Graphics"""
 def main():
     print("Press numbers 0-6 to change demo")
     print("Run this demo via the terminal with the argument 'rot' to compare to Pygame (must be also installed) - `demos.py index rot`")
@@ -21,6 +21,7 @@ def main():
     rot = 'rot' in sys.argv
 
     from BlazeSudio.graphics import Core, Ix, Clock, Col, Op, Font
+    Core.fullscreen()
     Core.vsync = False
 
     fnt = Font.SysFonts.default()
@@ -113,9 +114,6 @@ def main():
                          Op.Draw.Circle((130, 130), 50, 0, Col.White))
                 perframe = _6perframe
         ops.freeze()
-
-
-    Core.resize()
     changeOp(1)
 
     nxtchng = None

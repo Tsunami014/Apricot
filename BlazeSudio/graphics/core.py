@@ -86,6 +86,14 @@ class _CoreCls:
         sdl2.SDL_DestroyTexture(self._texture)
         self._texture = sdl2.SDL_CreateTexture(self._renderer, _PIXFMT, sdl2.SDL_TEXTUREACCESS_STREAMING, *self._sze)
 
+    def fullscreen(self):
+        """
+        Resize the window to fullscreen.
+
+        A wrapper for `Core.resize()`
+        """
+        self.resize()
+
     def _find_size(self):
         w, h = ctypes.c_int(), ctypes.c_int()
         sdl2.SDL_GetWindowSize(self._mainWin, ctypes.byref(w), ctypes.byref(h))

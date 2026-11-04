@@ -1,4 +1,4 @@
-"""New GUI [graphics]"""
+"""New GUI"""
 def main():
     from BlazeSudio.graphics import Draw
     from BlazeSudio.GUI import OpElm

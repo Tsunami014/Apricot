@@ -1,7 +1,7 @@
-"""Image wrapping [image]"""
+"""Image wrapping"""
 def main():
     from BlazeSudio.GUI import UI, Lays, Elms
-    UI.resize()
+    UI.fullscreen()
 
     UI(
         Lays.HBox[None,

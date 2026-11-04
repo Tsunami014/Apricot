@@ -1,9 +1,11 @@
-"""Collisions demo [collisions]"""
+"""Collisions demo"""
 
 def main():
     from BlazeSudio import collisions
     from BlazeSudio.graphics import Core, Ix, Clock, Col, Op, Font
     import math
+    Core.fullscreen()
+
     header_opts = ['point', 'line', 'arc', 'circle', 'rect', 'rotated rect', 'polygon', 'eraser', 'combiner', 'help']
     types = [collisions.Point, collisions.Line, collisions.Arc, collisions.Circle, collisions.Rect, collisions.RotatedRect, collisions.Polygon, collisions.NoShape]
     rbw = Col.Rainbow()
@@ -11,19 +13,21 @@ def main():
 
     FONT = Font.SysFonts.default()
     header_sze = FONT.lineheight+20
-    MOD_SPEED = 130 # Units per second
+    MOD_SPEED = 150 # Units per second
     BOUNCE_SPEED = 2 # Bounciness change per second
-    SPEED = 1800 # Acceleration in pixels per second squared
-    gravity_amnt = 1000 # Pixels per second squared
-    friction_amnt = 400 # Pixels per second squared
-    vellLimit = 2400 # Pixels per second
+
+    SPEED = 4000 # Acceleration in pixels per second squared
+    gravity_amnt = 1800 # Pixels per second squared
+    decay = 0.99 # After one second with no forces, velocity would have decayed this much from the original
+
     typ = 0
     curObj: collisions.Shape = collisions.Point(0, 0)
     objs = collisions.Shapes()
     dir = [0, 0, 0]
     combineTyp = 0
-    pos = [0, 0]
-    vel = [0, 0]
+    pos = (0, 0)
+    vel = (0, 0)
+    accels = []
     combineFs = {
         'CollsUnion': collisions.Combine.union,
         'ShapelyUnion': collisions.shapely.shapelyUnion,
@@ -108,6 +112,7 @@ def main():
     clock = Clock()
     dt = 0
     while Ix.handleBasic():
+        accels = []
         playMode = Ix.Keys.mAlt
         if not playMode:
             for ev in Ix.loopEvs():
@@ -190,43 +195,44 @@ def main():
                                     prevWid = Core.width
                                     Core(Op.Fill(Col.White) + FONT.render("""How to use:
 Click on one of the options at the top to change your tool. Pressing space adds it to the board (or applies some function to existing objects).
-The up, down, left and right arrow keys as well as comma and full stop do stuff with some of them too. When not holding alt to be in play mode, wsad does the same as the arrow keys but is more precise.
+The up, down, left and right arrow keys as well as comma and full stop do stuff with some of them too. When not holding alt to be in play mode, wsad does the same as the arrow keys but is more precise; and holding q makes it even faster.
 Holding '[' and ']' changes the bounciness of the object, and '-' and '=' are to fine-tune.
 Holding shift in this mode shows the normals, and holding control shows the closest points to the object!
-And holding alt allows you to test the movement physics. Holding shift and alt makes the movement physics have gravity, and holding ctrl reverses that gravity! Holding 'L' makes you have no friction. \
+And holding alt allows you to test the movement physics. Holding shift and alt makes the movement physics have gravity, and holding ctrl reverses that gravity! Holding 'L' prevents decay. \
 And holding '/' while holding shift will... well... I'll let you find that out for yourself.
 And pressing 'r' will reset everything without warning.
 
-Press any key/mouse to close this window""", Col.Black, prevWid))
+Press any key/mouse to close this window""", Col.Black, prevWid-20) @ (10, 10))
                                     Core.rend()
                                 for ev in Ix.loopEvs():
                                     if Ix.MouseEvent(ev, Ix.EvTyp.MouseDown) or Ix.KeyEvent(ev, Ix.EvTyp.KeyDown):
                                         run2 = False
                                         break
-                                dt = clock.tick(60)
+                                dt = min(clock.tick(60), 0.5)
                             typ = oldtyp
 
+            speed = 4 if Ix.Keys["q"] else 1
             if Ix.Keys["up"]:
-                dir[1] -= MOD_SPEED*dt
+                dir[1] -= MOD_SPEED*dt*speed
             if Ix.Keys["down"]:
-                dir[1] += MOD_SPEED*dt
+                dir[1] += MOD_SPEED*dt*speed
             if Ix.Keys["left"]:
-                dir[0] -= MOD_SPEED*dt
+                dir[0] -= MOD_SPEED*dt*speed
             if Ix.Keys["right"]:
-                dir[0] += MOD_SPEED*dt
+                dir[0] += MOD_SPEED*dt*speed
             if Ix.Keys[","]:
-                dir[2] -= MOD_SPEED*dt
+                dir[2] -= MOD_SPEED*dt*speed
             if Ix.Keys["."]:
-                dir[2] += MOD_SPEED*dt
+                dir[2] += MOD_SPEED*dt*speed
 
         if Ix.Keys["w"]:
-            vel[1] -= SPEED*dt
+            accels.append((0, -SPEED))
         if Ix.Keys["s"]:
-            vel[1] += SPEED*dt
+            accels.append((0, SPEED))
         if Ix.Keys["a"]:
-            vel[0] -= SPEED*dt
+            accels.append((-SPEED, 0))
         if Ix.Keys["d"]:
-            vel[0] += SPEED*dt
+            accels.append((SPEED, 0))
 
         if Ix.Keys["["]:
             curObj.bounciness = max(0.1, round(curObj.bounciness-BOUNCE_SPEED*dt, 3))
@@ -250,38 +256,34 @@ Press any key/mouse to close this window""", Col.Black, prevWid))
             ops += FONT.render(header_opts[i], Col.Black) @ (i*eachwid+10, 10)
 
         if playMode:
+            # Gravity
             if Ix.Keys.mShift:
                 if Ix.Keys['/']:
                     cpoints = objs.closestPointTo(curObj) # [(i, i.closestPointTo(curObj)) for i in objs]
                     if cpoints:
                         # Find the point on the unit circle * 0.2 that is closest to the object
                         angle = math.atan2(curObj.y-cpoints[1], curObj.x-cpoints[0])
-                        gravity = [-gravity_amnt*math.cos(angle), -gravity_amnt*math.sin(angle)]
-                    else:
-                        gravity = [0, 0]
+                        accels.append(
+                            (-gravity_amnt*math.cos(angle), -gravity_amnt*math.sin(angle))
+                        )
                 elif Ix.Keys.mCtrl:
-                    gravity = [0, -gravity_amnt]
+                    accels.append((0, -gravity_amnt))
                 else:
-                    gravity = [0, gravity_amnt]
-            else:
-                gravity = [0, 0]
-            vel = [vel[0] + gravity[0]*dt, vel[1] + gravity[1]*dt]
-            vel = [min(max(vel[0], -vellLimit), vellLimit), min(max(vel[1], -vellLimit), vellLimit)]
-            if not Ix.Keys['l']:
-                friction = [friction_amnt*dt, friction_amnt*dt]
-            else:
-                friction = [0, 0]
-            def fric_eff(x, fric):
-                if x < -fric:
-                    return x + fric
-                if x > fric:
-                    return x - fric
-                return 0
-            vel = [fric_eff(vel[0], friction[0]), fric_eff(vel[1], friction[1])]
-            _, stepVel = curObj.handleCollisionsVel([vel[0]*dt, vel[1]*dt], objs)
+                    accels.append((0, gravity_amnt))
+            dcay = not Ix.Keys['l']
+            def lim(v):
+                if dcay:
+                    v *= decay**dt
+                if abs(v) < dt:
+                    return 0
+                return v
+            vel = (
+                lim(vel[0]+sum(a[0] for a in accels)*dt),
+                lim(vel[1]+sum(a[1] for a in accels)*dt),
+            )
             if dt > 0:
-                vel = [stepVel[0]/dt, stepVel[1]/dt]
-
+                _, newVel = curObj.handleCollisionsVel((vel[0]*dt, vel[1]*dt), objs)
+                vel = (newVel[0]/dt, newVel[1]/dt)
         else:
             pos = Ix.Mouse.pos
             vel = [0, 0]
@@ -318,7 +320,9 @@ Press any key/mouse to close this window""", Col.Black, prevWid))
                 pass
         if typ == 8:
             ops += FONT.render(list(combineFs.keys())[combineTyp], Col.White) @ (0, header_sze+2)
+        elif playMode:
+            ops += FONT.render(f"Velocity: [{round(vel[0], 1)}, {round(vel[1], 1)}]", Col.White) @ (0, header_sze+2)
         Core(ops)
         Core.rend()
-        dt = clock.tick(60)
+        dt = min(clock.tick(), 0.5)
     Core.Quit()

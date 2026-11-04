@@ -1,4 +1,4 @@
-"""Tileset collision [graphics & collisions]"""
+"""Tileset collision"""
 def main():
     from BlazeSudio.graphics import Screen, Loading, options as GO, GUI
     from BlazeSudio.utils import genCollisions as gen
