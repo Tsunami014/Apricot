@@ -32,14 +32,19 @@ classifiers = [
 # 6 - Mature
 # 7 - Inactive
 
+requires-python = ">= 3.11"
+
 dependencies = [
-    "numpy",
+    "numpy>=1.7",
     "pillow",
     "freetype-py",
     "pyperclip",
 ]
 
-requires-python = ">= 3.11"
+[project.optional-dependencies]
+speed = [
+    "stubgen-pyx",
+]
 
 [project.urls]
 Homepage = "https://github.com/Tsunami014/Apricot"
