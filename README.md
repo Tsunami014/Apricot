@@ -71,7 +71,6 @@ pip install "git+https://github.com/Tsunami014/Apricot.git"
 ## Fun facts
 - This project was made entirely by one person! (So far)
 - This project was started before AI existed (back in ye olde 2023/2024, origins are debatable), and many features, including the whole physics engine and image wrapping, were created entirely by me without help from AI in any way (because it wasn't good enough to help at all).
-- The only module I even partially vibe coded was the graphics engine internals (for drawing shapes and stuff to numpy arrays), the rest was made by me.
 - I turned/will turn (not bothered to change this lol) 18 in 2027. So that means I also made the physics engine etc. before I was/am an adult. Which is my greatest flex hehe
 - Because this project is so old (in terms of my life), I changed coding styles a LOT during development, and because it's so big there's a chance you can find some places where my old code still is unfortunately
 - I tried to use as little external libraries as possible, mostly because I didn't want this to end up like some projects where it has to install a million different things. Also fits with the theme of 'making stuff all myself from scratch'.
