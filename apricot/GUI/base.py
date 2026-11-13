@@ -61,7 +61,7 @@ class _UIBase:
     def clearFocus(self):
         self.elm.clearFocus()
 
-    def Run(self, maxfps: float = None, *, quit_after: bool = True, fps_title: bool = False):
+    def Run(self, maxfps: float|None = None, *, quit_after: bool = True, fps_title: bool = False):
         while Ix.handleBasic():
             self.cursor = True
             mevs = []

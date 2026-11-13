@@ -45,6 +45,9 @@ dependencies = [
 speed = [
     "stubgen-pyx",
 ]
+docs = [
+    "griffe",
+]
 
 [project.urls]
 Homepage = "https://github.com/Tsunami014/Apricot"

@@ -18,6 +18,7 @@ pkgs.mkShell {
     shapely
     pyperclip
     freetype-py
+    griffe
   ]);
 
   shellHook = ''
